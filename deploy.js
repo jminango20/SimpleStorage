@@ -6,11 +6,11 @@ async function main(){
     //compile them in our code
     //compile them separately
     const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
-    //const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
-    //console.log(`${process.env.PRIVATE_KEY}`)
-    const encryptedKeyJson = fs.readFileSync("./.encryptedKey.json", "utf-8")
-    let wallet = new ethers.Wallet.fromEncryptedJsonSync(encryptedKeyJson, process.env.PRIVATE_KEY_PASSWORD)
-    wallet = await wallet.connect(provider)    
+    const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+    console.log(`${process.env.PRIVATE_KEY}`)
+    //const encryptedKeyJson = fs.readFileSync("./.encryptedKey.json", "utf-8")
+    //let wallet = new ethers.Wallet.fromEncryptedJsonSync(encryptedKeyJson, process.env.PRIVATE_KEY_PASSWORD)
+    //wallet = await wallet.connect(provider)    
     const abi = fs.readFileSync("./SimpleStorage_sol_SimpleStorage.abi", "utf-8");
     const binary = fs.readFileSync("./SimpleStorage_sol_SimpleStorage.bin", "utf-8");
     const contractFactory = new ethers.ContractFactory(abi, binary, wallet);
@@ -18,6 +18,7 @@ async function main(){
     console.log("Deploying, please wait!...");
     const contract = await contractFactory.deploy(); //STOP here!. Wait for contract to deploy
     await contract.deployTransaction.wait(1);
+    console.log(`Contract Address: ${contract.address}`);
     //Get Favorite Number by Interacting with the contract
     const currentFavoriteNumber = await contract.retrieve();
     console.log(`Your initial favorite number is: ${currentFavoriteNumber}`);
